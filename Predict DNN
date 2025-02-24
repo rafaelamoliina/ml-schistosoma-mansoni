@@ -34,3 +34,9 @@ if __name__ == "__main__":
     # Save results
     new_data.to_csv("predictions_dnn.csv", index=False)
     print("Predictions saved successfully!")
+    
+    # Clear TensorFlow session to free memory
+    tf.keras.backend.clear_session()
+    del model
+    gc.collect()
+
