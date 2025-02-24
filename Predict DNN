@@ -1,0 +1,36 @@
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+import joblib
+from tensorflow.keras.models import load_model
+
+# Function to extract fingerprints
+def extract_fingerprints(df, fingerprint_type='Morgan'):
+    return np.array(df[fingerprint_type].apply(eval).tolist())
+
+# Load trained model
+def load_trained_model(model_path="dnn_model.h5"):
+    return load_model(model_path)
+
+# Perform inference on new compounds
+def predict_activity(model, X_new):
+    predictions = model.predict(X_new)
+    return predictions.flatten()
+
+if __name__ == "__main__":
+    # Load trained model
+    model = load_trained_model()
+    
+    # Load new compounds for prediction
+    new_data = pd.read_csv("dataset_test.csv")
+    X_new = extract_fingerprints(new_data, 'Morgan')
+    
+    # Make predictions
+    predictions = predict_activity(model, X_new)
+    
+    # Add predictions to the dataframe
+    new_data['Predicted_Activity'] = predictions
+    
+    # Save results
+    new_data.to_csv("predictions_dnn.csv", index=False)
+    print("Predictions saved successfully!")
